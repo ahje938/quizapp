@@ -5,14 +5,12 @@ services:
       context: ./question-service
       dockerfile: Dockerfile
     ports:
-      - "8002:8080"
+      - "8002:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     networks:
       - quiz-network
-    volumes:
-      - ./question-service:/app
-      - /app/target  # Unngå å overskrive bygde filer
+      
 
   quiz-service:
     container_name: quiz-service1
@@ -20,16 +18,13 @@ services:
       context: ./quiz-service
       dockerfile: Dockerfile
     ports:
-      - "8001:8080"
+      - "8001:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       - question-service
     networks:
       - quiz-network
-    volumes:
-      - ./quiz-service:/app
-      - /app/target
 
   user-service:
     container_name: user-service1
@@ -37,7 +32,7 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "8003:8080"
+      - "8003:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     depends_on:
@@ -46,9 +41,6 @@ services:
       - frontend
     networks:
       - quiz-network
-    volumes:
-      - ./user-service:/app
-      - /app/target
 
   frontend:
     container_name: frontend
@@ -63,7 +55,7 @@ services:
     networks:
       - quiz-network
     volumes:
-      - ../frontend:/app
+      - ../frontend:/app  # Frontend kan beholde volumet for hot-reloading
 
 networks:
   quiz-network:
