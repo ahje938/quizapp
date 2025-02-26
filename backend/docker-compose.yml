@@ -1,0 +1,70 @@
+services:
+  question-service:
+    container_name: question-service1
+    build:
+      context: ./question-service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - quiz-network
+    volumes:
+      - ./question-service:/app
+      - /app/target  # Unngå å overskrive bygde filer
+
+  quiz-service:
+    container_name: quiz-service1
+    build:
+      context: ./quiz-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - question-service
+    networks:
+      - quiz-network
+    volumes:
+      - ./quiz-service:/app
+      - /app/target
+
+  user-service:
+    container_name: user-service1
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - question-service
+      - quiz-service
+      - frontend
+    networks:
+      - quiz-network
+    volumes:
+      - ./user-service:/app
+      - /app/target
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80" # 3000 på host -> 80 i Nginx
+    depends_on:
+      - quiz-service
+      - question-service
+    networks:
+      - quiz-network
+    volumes:
+      - ../frontend:/app
+
+networks:
+  quiz-network:
+    driver: bridge
