@@ -17,7 +17,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Tillat opprinnelsen til frontend
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5174"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173"));
         // Tillat alle nødvendige metoder, inkludert OPTIONS for pre-flight
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // Tillat alle headere

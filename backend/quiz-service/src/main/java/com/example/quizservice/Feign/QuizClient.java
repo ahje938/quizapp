@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.quizservice.DTO.QuestionDto;
 
-
-//port 8080 grunnet kommunikasjon mellom tjenester, 8002 hvis ekstern
-@FeignClient(name = "question-service1" , url="http://question-service1:8080" )
+//question-service:8082 FOR TEST MELLOM CONTAINER, localhost:8002 FOR TEST UTENOM 
+@FeignClient(name = "question-service", url = "http://question-service:8082")
 public interface QuizClient {
-    
-    //nøyaktig endepunkt som brukes i andre tjenesten :8080/api/question
+
+    // nøyaktig endepunkt som brukes i andre tjenesten :8080/api/question
     @GetMapping("/api/question")
     List<QuestionDto> getAllQuestions();
 
@@ -24,5 +23,5 @@ public interface QuizClient {
 
     @GetMapping("api/question/byIds")
     public Set<QuestionDto> getQuestionsById(@RequestParam Set<String> ids);
-    
+
 }

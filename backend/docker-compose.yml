@@ -1,6 +1,5 @@
 services:
   question-service:
-    container_name: question-service1
     build:
       context: ./question-service
       dockerfile: Dockerfile
@@ -10,10 +9,9 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
     networks:
       - quiz-network
-      
+    restart: unless-stopped
 
   quiz-service:
-    container_name: quiz-service1
     build:
       context: ./quiz-service
       dockerfile: Dockerfile
@@ -25,9 +23,9 @@ services:
       - question-service
     networks:
       - quiz-network
+    restart: unless-stopped
 
   user-service:
-    container_name: user-service1
     build:
       context: ./user-service
       dockerfile: Dockerfile
@@ -38,25 +36,28 @@ services:
     depends_on:
       - question-service
       - quiz-service
-      - frontend
     networks:
       - quiz-network
+    restart: unless-stopped
 
   frontend:
-    container_name: frontend
     build:
       context: ../frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:80" # 3000 på host -> 80 i Nginx
+      - "3000:80"
     depends_on:
       - quiz-service
       - question-service
     networks:
       - quiz-network
     volumes:
-      - ../frontend:/app  # Frontend kan beholde volumet for hot-reloading
+      - frontend_data:/app
+    restart: unless-stopped
 
 networks:
   quiz-network:
     driver: bridge
+
+volumes:
+  frontend_data:

@@ -32,22 +32,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // ❌ Deaktiver CSRF for API
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 🔥
-                                                                                                              // Stateløs
-                                                                                                              // autentisering
+                .csrf(csrf -> csrf.disable()) // Deaktiver CSRF for API
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login", "/auth/validatetoken", "/auth/logout")
-                        .permitAll() // 🟢
-                        // Tillat
-                        // disse
-                        // uten
-                        // autentisering
-                        .anyRequest().authenticated() // 🔐 Alle andre ruter krever JWT
-                )
+                        .permitAll()
+
+                        .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userDetailsService),
-                        UsernamePasswordAuthenticationFilter.class); // 🔥 Legg til JWT-filteret før standard
-                                                                     // login-filteret
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.quizservice.DTO.QuestionDto;
+import com.example.quizservice.DTO.QuizAnswerDto;
 import com.example.quizservice.DTO.QuizDto;
-
 import com.example.quizservice.Feign.QuizClient;
 import com.example.quizservice.Model.Quiz;
 import com.example.quizservice.Repository.QuizRepository;
@@ -34,8 +34,6 @@ public class QuizController {
     @Autowired
     QuizService quizService;
 
-    
-
     private final QuizClient quizClient;
 
     @Autowired
@@ -43,58 +41,51 @@ public class QuizController {
         this.quizClient = quizClient;
     }
 
-
-    //via question service || test
-    @GetMapping("/questions")
-    public List<QuestionDto> getAllQuestions(){
-        return quizClient.getAllQuestions();
-    }
-
-    //via question-service || test
+    // via question-service || test
     @GetMapping("/questions/{id}")
-    public QuestionDto getQuestionById(@PathVariable String id){
+    public QuestionDto getQuestionById(@PathVariable String id) {
         return quizClient.getQuestionById(id);
     }
 
-
-
-    //via question-service
-    //http://localhost:8001/api/quiz/questions/byIds?ids=xxxx&ids=xxxx&ids=xxxx
+    // via question-service
+    // http://localhost:8001/api/quiz/questions/byIds?ids=xxxx&ids=xxxx&ids=xxxx
     @GetMapping("/questions/byIds")
-    public Set<QuestionDto> getQuestionsById(@RequestParam Set<String> ids){
+    public Set<QuestionDto> getQuestionsById(@RequestParam Set<String> ids) {
         return quizService.getAllQuestionsByIds(ids);
     }
 
+    // Hente quiz byId med alle tilsvarende spørsmål (questionIds)
     @GetMapping("/{id}")
-    public QuizDto getQuizWithQuestions(@PathVariable String id){
+    public QuizDto getQuizWithQuestions(@PathVariable String id) {
         return quizService.getQuizWithQuestions(id);
     }
-    
-    
+
     @GetMapping()
-    public List<Quiz> getQuizs(){
+    public List<Quiz> getQuizs() {
         return quizRepository.findAll();
 
     }
 
     @PostMapping()
-    public Quiz addQuiz(@RequestBody Quiz quiz){
+    public Quiz addQuiz(@RequestBody Quiz quiz) {
         return quizService.addQuiz(quiz);
-        
-        
+
     }
 
     @DeleteMapping("/{id}")
-    public void deleteQuiz(@PathVariable String id){
+    public void deleteQuiz(@PathVariable String id) {
         quizService.deleteQuizById(id);
     }
 
-
-    
     @PatchMapping("/{id}")
-    public ResponseEntity<Quiz> addQuestionsToQuizById(@PathVariable String id,  @RequestBody Map<String, Set<String>> updates){
+    public ResponseEntity<Quiz> addQuestionsToQuizById(@PathVariable String id,
+            @RequestBody Map<String, Set<String>> updates) {
         return quizService.addQuestionsToQuizById(id, updates);
     }
-    
 
+    @PostMapping("/validate")
+    public ResponseEntity<List<Boolean>> validateAnswers(@RequestBody List<QuizAnswerDto> answers) {
+        List<Boolean> validationResults = quizService.validateAnswers(answers);
+        return ResponseEntity.ok(validationResults);
+    }
 }

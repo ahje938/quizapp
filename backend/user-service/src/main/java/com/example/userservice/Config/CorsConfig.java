@@ -15,10 +15,12 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Gjelder for alle ruter
-                        .allowedOrigins("http://localhost:5173") // Tillater React frontend
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:3000", "http://localhost:5173") // React/Nginx via docker og
+                                                                                          // dev react host for
+                                                                                          // utvikling
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowCredentials(true) // 🔥 Tillater cookies!
+                        .allowCredentials(true)
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization");
             }
